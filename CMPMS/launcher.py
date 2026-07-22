@@ -3,6 +3,9 @@ import os
 from dotenv import load_dotenv
 
 from cmpms.core.bot import CMPMSBot
+from cmpms.utils.logger import setup_logger
+
+from cmpms.config.manager import ConfigManager
 
 load_dotenv()
 
@@ -14,3 +17,9 @@ if TOKEN is None:
 bot = CMPMSBot()
 
 bot.run(TOKEN)
+
+logger = setup_logger()
+
+logger.info("CMPMS starting...")
+
+config = ConfigManager()
