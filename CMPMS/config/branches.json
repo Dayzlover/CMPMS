@@ -1,0 +1,46 @@
+{
+    "branches": [
+        {
+            "prefix": "CDF",
+            "name": "Chernarus Defense Forces",
+            "active": true,
+            "next_service_number": 1
+        },
+        {
+            "prefix": "CGDF",
+            "name": "Chernarus Ground Defense Forces",
+            "active": true,
+            "next_service_number": 1
+        },
+        {
+            "prefix": "CADF",
+            "name": "Chernarus Air Defense Forces",
+            "active": true,
+            "next_service_number": 1
+        },
+        {
+            "prefix": "CNDF",
+            "name": "Chernarus Naval Defense Forces",
+            "active": true,
+            "next_service_number": 1
+        },
+        {
+            "prefix": "CSOG",
+            "name": "Chernarus Special Operations Group",
+            "active": true,
+            "next_service_number": 1
+        },
+        {
+            "prefix": "CSS",
+            "name": "Chernarus State Security",
+            "active": true,
+            "next_service_number": 1
+        },
+        {
+            "prefix": "CNPD",
+            "name": "Chernarus National Police Department",
+            "active": true,
+            "next_service_number": 1
+        }
+    ]
+}
