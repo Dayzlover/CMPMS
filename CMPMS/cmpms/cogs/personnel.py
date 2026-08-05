@@ -27,6 +27,4 @@ class Personnel(commands.Cog):
 
 
 async def setup(bot):
-    cog = Personnel(bot)
-    bot.tree.add_command(cog.personnel)
-    await bot.add_cog(cog)
+    await bot.add_cog(Personnel(bot))
