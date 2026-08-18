@@ -239,9 +239,25 @@ class PersonnelManager:
 
         self.database.cursor.execute(
             """
-                SELECT *
-                FROM personnel
-                WHERE discord_id = ?
+            SELECT
+                p.*,
+
+                b.name AS branch_name,
+                b.prefix AS branch_prefix,
+
+                r.name AS rank_name,
+                r.code AS rank_code,
+                r.pay AS rank_pay
+
+            FROM personnel p
+
+            LEFT JOIN branches b
+                ON p.branch_id = b.branch_id
+
+            LEFT JOIN ranks r
+                ON p.rank_id = r.rank_id
+
+            WHERE p.discord_id = ?
             """,
             (str(discord_id),)
         )
