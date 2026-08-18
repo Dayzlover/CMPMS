@@ -24,83 +24,100 @@ class DatabaseManager:
         self.create_member_certifications_table()
         self.create_promotion_history_table()
         self.create_audit_log_table()
+        self.create_name_history_table()
 
         self.connection.commit()
 
     def create_personnel_table(self):
-        self.cursor.execute("""
-        CREATE TABLE IF NOT EXISTS personnel (
+        self.cursor.execute(
+        """
+            CREATE TABLE IF NOT EXISTS personnel (
             personnel_id INTEGER PRIMARY KEY AUTOINCREMENT,
 
             discord_id TEXT UNIQUE NOT NULL,
-            discord_username TEXT,
+            discord_username TEXT NOT NULL,
 
+            full_name TEXT NOT NULL,
             display_name TEXT NOT NULL,
-            dayz_name TEXT,
-            steam_uid TEXT,
+            callsign TEXT,
 
-            current_service_id TEXT UNIQUE,
+            steam_username TEXT,
+            steam_uid TEXT UNIQUE NOT NULL,
 
-            branch TEXT NOT NULL,
-            rank TEXT NOT NULL,
+            dayz_name TEXT NOT NULL,
+
+            branch_id INTEGER NOT NULL,
+            rank_id INTEGER NOT NULL,
+
+            position TEXT,
+            ambassador INTEGER DEFAULT 0,
 
             status TEXT NOT NULL,
 
-            join_date TEXT NOT NULL,
-            last_active TEXT,
+            current_service_id TEXT UNIQUE NOT NULL,
 
-            activity_points INTEGER DEFAULT 0
-        )
-        """)
+            date_joined TEXT NOT NULL,
+            last_seen TEXT,
+
+            weekly_active_hours REAL DEFAULT 0,
+            monthly_active_hours REAL DEFAULT 0,
+            sessions_this_week INTEGER DEFAULT 0,
+
+            payroll_eligible INTEGER DEFAULT 0,
+            payroll_balance INTEGER DEFAULT 0,
+
+            notes TEXT DEFAULT 'None',
+
+            FOREIGN KEY(branch_id)
+                REFERENCES branches(branch_id),
+
+            FOREIGN KEY(rank_id)
+                REFERENCES ranks(rank_id)
+            )
+        """
+    )
 
     def create_branches_table(self):
-        self.cursor.execute("""
-    CREATE TABLE IF NOT EXISTS branches (
-        branch_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        self.cursor.execute(
+        """
+            CREATE TABLE IF NOT EXISTS branches (
+            branch_id INTEGER PRIMARY KEY AUTOINCREMENT,
 
-        prefix TEXT UNIQUE NOT NULL,
-        name TEXT NOT NULL,
+            prefix TEXT UNIQUE NOT NULL,
 
-        active INTEGER DEFAULT 1,
+            name TEXT NOT NULL,
 
-        next_service_number INTEGER DEFAULT 1
+            active INTEGER DEFAULT 1,
+
+            next_service_number INTEGER DEFAULT 1
+            )
+        """
     )
-    """)
-
-    def create_service_history_table(self):
-        self.cursor.execute("""
-        CREATE TABLE IF NOT EXISTS service_history (
-            history_id INTEGER PRIMARY KEY AUTOINCREMENT,
-
-            personnel_id INTEGER NOT NULL,
-
-            service_id TEXT NOT NULL,
-
-            branch TEXT NOT NULL,
-
-            start_date TEXT NOT NULL,
-            end_date TEXT,
-
-            FOREIGN KEY(personnel_id)
-                REFERENCES personnel(personnel_id)
-        )
-        """)
 
     def create_ranks_table(self):
-        self.cursor.execute("""
-        CREATE TABLE IF NOT EXISTS ranks (
-            rank TEXT PRIMARY KEY,
+        self.cursor.execute(
+        """
+            CREATE TABLE IF NOT EXISTS ranks (
+            rank_id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+            code TEXT UNIQUE NOT NULL,
+
+            name TEXT NOT NULL,
+
+            category TEXT NOT NULL,
 
             pay INTEGER NOT NULL,
 
             promotion_limit TEXT,
 
             approval_required INTEGER DEFAULT 0
-        )
-        """)
+            )
+        """
+    )
 
     def create_certifications_table(self):
-        self.cursor.execute("""
+        self.cursor.execute(
+            """
         CREATE TABLE IF NOT EXISTS certifications (
             certification_id INTEGER PRIMARY KEY AUTOINCREMENT,
 
@@ -109,7 +126,8 @@ class DatabaseManager:
         """)
 
     def create_member_certifications_table(self):
-        self.cursor.execute("""
+        self.cursor.execute(
+            """
         CREATE TABLE IF NOT EXISTS member_certifications (
             personnel_id INTEGER NOT NULL,
 
@@ -129,23 +147,63 @@ class DatabaseManager:
         )
         """)
 
+    def create_service_history_table(self):
+        self.cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS service_history (
+                history_id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+                personnel_id INTEGER NOT NULL,
+
+                service_id TEXT NOT NULL,
+
+                branch TEXT NOT NULL,
+
+                start_date TEXT NOT NULL,
+                end_date TEXT,
+
+                FOREIGN KEY(personnel_id)
+                    REFERENCES personnel(personnel_id)
+            )
+            """
+        )
+
     def create_promotion_history_table(self):
         self.cursor.execute("""
-        CREATE TABLE IF NOT EXISTS promotion_history (
-            promotion_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            CREATE TABLE IF NOT EXISTS promotion_history (
+                promotion_id INTEGER PRIMARY KEY AUTOINCREMENT,
 
-            personnel_id INTEGER NOT NULL,
+                personnel_id INTEGER NOT NULL,
 
-            old_rank TEXT,
-            new_rank TEXT NOT NULL,
+                old_rank TEXT,
+                new_rank TEXT NOT NULL,
 
-            promoted_by TEXT,
+                promoted_by TEXT,
 
-            promotion_date TEXT NOT NULL,
+                promotion_date TEXT NOT NULL,
 
-            FOREIGN KEY(personnel_id)
-                REFERENCES personnel(personnel_id)
-        )
+                FOREIGN KEY(personnel_id)
+                    REFERENCES personnel(personnel_id)
+            )
+        """)
+
+    def create_name_history_table(self):
+        self.cursor.execute("""
+            CREATE TABLE IF NOT EXISTS name_history (
+                name_history_id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+                personnel_id INTEGER NOT NULL,
+
+                name_type TEXT NOT NULL,
+                previous_value TEXT,
+                new_value TEXT NOT NULL,
+
+                changed_on TEXT NOT NULL,
+                changed_by TEXT NOT NULL,
+
+                FOREIGN KEY(personnel_id)
+                    REFERENCES personnel(personnel_id)
+            )
         """)
 
     def create_audit_log_table(self):

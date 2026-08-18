@@ -1,0 +1,10 @@
+[
+    {
+        "code": "Training",
+        "name": "Recruit in Training",
+        "category": "Training",
+        "pay": 0,
+        "promotion_limit": "OR-1",
+        "approval_required": 0
+    }
+]
