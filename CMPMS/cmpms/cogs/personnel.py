@@ -157,6 +157,31 @@ class Personnel(commands.Cog):
             )
             return
 
+        personnel_id = personnel[0]
+
+        service_history = self.personnel_manager.get_service_history(
+            personnel_id
+        )
+
+        previous_service_ids = []
+
+        for service_id, branch, start_date, end_date in service_history:
+            if end_date:
+                previous_service_ids.append(
+                    f"• `{service_id}` — {branch} "
+                    f"({start_date} to {end_date})"
+                )
+            else:
+                previous_service_ids.append(
+                    f"• `{service_id}` — {branch} "
+                    f"({start_date} to Present)"
+                )
+
+        if previous_service_ids:
+            service_history_display = "\n".join(previous_service_ids)
+        else:
+            service_history_display = "None"
+
         (
             personnel_id,
             discord_id,
@@ -232,6 +257,10 @@ class Personnel(commands.Cog):
             f"{branch_prefix} | {branch_name}\n\n"
             f"**Rank:**\n"
             f"{rank_code} | {rank_name}\n\n"
+            f"**Current Service ID:**\n"
+            f"{current_service_id}\n\n"
+            f"**Service History:**\n"
+            f"{service_history_display}\n\n"
             f"**Position:**\n"
             f"{position_display}\n\n"
             f"**Ambassador:**\n"

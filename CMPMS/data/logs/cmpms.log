@@ -191,3 +191,29 @@
 12/08/2026 14:56:05 [INFO] Logged in as: CMPMS#3906
 12/08/2026 14:56:05 [INFO] User ID: 1525518105067913278
 12/08/2026 14:56:05 [INFO] ==================================================
+22/08/2026 00:29:49 [INFO] [SYSTEM] CMPMS starting...
+22/08/2026 00:29:49 [INFO] [CONFIG] Configuration loaded.
+22/08/2026 00:29:49 [INFO] [DATABASE] SQLite initialized successfully.
+22/08/2026 00:29:49 [INFO] [RANKS] Rank database synchronized.
+22/08/2026 00:29:49 [INFO] [BRANCHES] Branch database synchronized.
+22/08/2026 00:29:49 [INFO] [COG] Loaded: personnel
+22/08/2026 00:29:49 [INFO] [COG] Loaded: system
+22/08/2026 00:29:49 [INFO] [SYSTEM] Slash commands synchronized.
+22/08/2026 00:29:52 [INFO] ==================================================
+22/08/2026 00:29:52 [INFO] CMPMS READY
+22/08/2026 00:29:52 [INFO] Logged in as: CMPMS#3906
+22/08/2026 00:29:52 [INFO] User ID: 1525518105067913278
+22/08/2026 00:29:52 [INFO] ==================================================
+22/08/2026 01:01:59 [INFO] [SYSTEM] CMPMS starting...
+22/08/2026 01:01:59 [INFO] [CONFIG] Configuration loaded.
+22/08/2026 01:01:59 [INFO] [DATABASE] SQLite initialized successfully.
+22/08/2026 01:01:59 [INFO] [RANKS] Rank database synchronized.
+22/08/2026 01:01:59 [INFO] [BRANCHES] Branch database synchronized.
+22/08/2026 01:01:59 [INFO] [COG] Loaded: personnel
+22/08/2026 01:01:59 [INFO] [COG] Loaded: system
+22/08/2026 01:01:59 [INFO] [SYSTEM] Slash commands synchronized.
+22/08/2026 01:02:04 [INFO] ==================================================
+22/08/2026 01:02:04 [INFO] CMPMS READY
+22/08/2026 01:02:04 [INFO] Logged in as: CMPMS#3906
+22/08/2026 01:02:04 [INFO] User ID: 1525518105067913278
+22/08/2026 01:02:04 [INFO] ==================================================

@@ -262,4 +262,22 @@ class PersonnelManager:
             (str(discord_id),)
         )
 
+        def get_service_history(self, personnel_id):
+
+            self.database.cursor.execute(
+            """
+            SELECT
+                service_id,
+                branch,
+                start_date,
+                end_date
+            FROM service_history
+            WHERE personnel_id = ?
+            ORDER BY history_id ASC
+            """,
+            (personnel_id,)
+        )
+
+        return self.database.cursor.fetchall()
+
         return self.database.cursor.fetchone()
