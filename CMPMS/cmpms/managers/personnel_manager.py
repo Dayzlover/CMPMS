@@ -262,9 +262,11 @@ class PersonnelManager:
             (str(discord_id),)
         )
 
-        def get_service_history(self, personnel_id):
+        return self.database.cursor.fetchone()
 
-            self.database.cursor.execute(
+    def get_service_history(self, personnel_id):
+
+        self.database.cursor.execute(
             """
             SELECT
                 service_id,
@@ -279,5 +281,3 @@ class PersonnelManager:
         )
 
         return self.database.cursor.fetchall()
-
-        return self.database.cursor.fetchone()
