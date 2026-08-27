@@ -262,8 +262,6 @@ class PersonnelManager:
             (str(discord_id),)
         )
 
-        return self.database.cursor.fetchone()
-
     def get_service_history(self, personnel_id):
 
         self.database.cursor.execute(
@@ -279,5 +277,146 @@ class PersonnelManager:
             """,
             (personnel_id,)
         )
+
+def transfer_personnel(
+        self,
+        personnel_id,
+        new_branch_id,
+        performed_by
+    ):
+
+        self.database.cursor.execute(
+            """
+            SELECT
+                p.current_service_id,
+                p.branch_id,
+                b.prefix
+            FROM personnel p
+            LEFT JOIN branches b
+                ON p.branch_id = b.branch_id
+            WHERE p.personnel_id = ?
+            """,
+            (personnel_id,)
+        )
+
+        personnel = self.database.cursor.fetchone()
+
+        if personnel is None:
+            raise ValueError("Personnel record not found.")
+
+        old_service_id = personnel["current_service_id"]
+        old_branch_id = personnel["branch_id"]
+
+        if old_branch_id == new_branch_id:
+            raise ValueError(
+                "Personnel is already assigned to this branch."
+            )
+
+        self.database.cursor.execute(
+            """
+            SELECT
+                prefix,
+                name
+            FROM branches
+            WHERE branch_id = ?
+              AND active = 1
+            """,
+            (new_branch_id,)
+        )
+
+        new_branch = self.database.cursor.fetchone()
+
+        if new_branch is None:
+            raise ValueError(
+                "Target branch does not exist or is inactive."
+            )
+
+        new_branch_prefix = new_branch["prefix"]
+        new_branch_name = new_branch["name"]
+
+        today = datetime.now().strftime("%d/%m/%Y")
+
+        new_service_id = self.id_manager.generate_service_id(
+            new_branch_prefix
+        )
+
+        self.database.cursor.execute(
+            """
+            UPDATE service_history
+            SET end_date = ?
+            WHERE personnel_id = ?
+              AND service_id = ?
+              AND end_date IS NULL
+            """,
+            (
+                today,
+                personnel_id,
+                old_service_id
+            )
+        )
+
+        self.database.cursor.execute(
+            """
+            INSERT INTO service_history (
+                personnel_id,
+                service_id,
+                branch,
+                start_date
+            )
+            VALUES (?, ?, ?, ?)
+            """,
+            (
+                personnel_id,
+                new_service_id,
+                new_branch_prefix,
+                today
+            )
+        )
+
+        self.database.cursor.execute(
+            """
+            UPDATE personnel
+            SET
+                branch_id = ?,
+                current_service_id = ?
+            WHERE personnel_id = ?
+            """,
+            (
+                new_branch_id,
+                new_service_id,
+                personnel_id
+            )
+        )
+
+        self.database.cursor.execute(
+            """
+            INSERT INTO audit_log (
+                personnel_id,
+                action,
+                performed_by,
+                action_date,
+                details
+            )
+            VALUES (?, ?, ?, ?, ?)
+            """,
+            (
+                personnel_id,
+                "Branch Transfer",
+                performed_by,
+                today,
+                f"Transferred from {old_service_id} to "
+                f"{new_service_id} ({new_branch_name})"
+            )
+        )
+
+        self.database.connection.commit()
+
+        return {
+            "old_service_id": old_service_id,
+            "new_service_id": new_service_id,
+            "new_branch_id": new_branch_id,
+            "new_branch_name": new_branch_name,
+            "date": today
+        }
 
         return self.database.cursor.fetchall()

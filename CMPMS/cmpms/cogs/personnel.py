@@ -312,7 +312,81 @@ class Personnel(commands.Cog):
         )
 
         await interaction.response.send_message(profile)
+        
+    @personnel.command(
+        name="transfer",
+        description="Transfer personnel to another branch."
+    )
+    @app_commands.describe(
+        member="The personnel member to transfer.",
+        branch="The prefix of the destination branch."
+    )
+    async def transfer(
+        self,
+        interaction: discord.Interaction,
+        member: discord.Member,
+        branch: str
+    ):
+        personnel = self.personnel_manager.get_personnel(member.id)
 
+        if personnel is None:
+            await interaction.response.send_message(
+                f"No personnel record was found for {member.mention}."
+            )
+            return
+
+        personnel_id = personnel[0]
+
+        self.database.cursor.execute(
+            """
+            SELECT
+                branch_id,
+                prefix,
+                name
+            FROM branches
+            WHERE prefix = ?
+              AND active = 1
+            """,
+            (branch.upper(),)
+        )
+
+        target_branch = self.database.cursor.fetchone()
+
+        if target_branch is None:
+            await interaction.response.send_message(
+                f"Branch `{branch.upper()}` does not exist "
+                f"or is inactive."
+            )
+            return
+
+        try:
+            result = self.personnel_manager.transfer_personnel(
+                personnel_id,
+                target_branch["branch_id"],
+                str(interaction.user)
+            )
+
+        except ValueError as error:
+            await interaction.response.send_message(
+                f"Transfer failed: {error}"
+            )
+            return
+
+        await interaction.response.send_message(
+            f"**Personnel transfer completed.**\n\n"
+            f"Personnel ID: `{personnel_id:06d}`\n"
+            f"Member: {member.mention}\n\n"
+            f"Previous Service ID:\n"
+            f"`{result['old_service_id']}`\n\n"
+            f"New Service ID:\n"
+            f"`{result['new_service_id']}`\n\n"
+            f"New Branch:\n"
+            f"{result['new_branch_name']}\n\n"
+            f"Transfer Date:\n"
+            f"{result['date']}\n\n"
+            f"Transferred By:\n"
+            f"{interaction.user.mention}"
+        )
 
 async def setup(bot):
     await bot.add_cog(Personnel(bot))
