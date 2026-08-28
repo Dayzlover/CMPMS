@@ -11,6 +11,8 @@ class DatabaseManager:
 
         self.database_path = data_dir / "cmpms.db"
 
+        print(f"[DATABASE] Using database: {self.database_path}")
+
         self.connection = sqlite3.connect(self.database_path)
         self.connection.row_factory = sqlite3.Row
         self.cursor = self.connection.cursor()

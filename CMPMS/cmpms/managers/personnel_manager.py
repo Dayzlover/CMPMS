@@ -262,6 +262,8 @@ class PersonnelManager:
             (str(discord_id),)
         )
 
+        return self.database.cursor.fetchone()
+
     def get_service_history(self, personnel_id):
 
         self.database.cursor.execute(
@@ -278,7 +280,9 @@ class PersonnelManager:
             (personnel_id,)
         )
 
-def transfer_personnel(
+        return self.database.cursor.fetchall()
+
+    def transfer_personnel(
         self,
         personnel_id,
         new_branch_id,
@@ -418,5 +422,3 @@ def transfer_personnel(
             "new_branch_name": new_branch_name,
             "date": today
         }
-
-        return self.database.cursor.fetchall()
