@@ -146,13 +146,15 @@ class Personnel(commands.Cog):
         self,
         interaction: discord.Interaction,
         member: discord.Member = None
-    ):
+       ):
+        await interaction.response.defer()
+
         target = member or interaction.user
 
         personnel = self.personnel_manager.get_personnel(target.id)
 
         if personnel is None:
-            await interaction.response.send_message(
+            await interaction.followup.send(
                 f"No personnel record was found for {target.mention}."
             )
             return
@@ -311,7 +313,7 @@ class Personnel(commands.Cog):
             f"{notes or 'None'}"
         )
 
-        await interaction.response.send_message(profile)
+        await interaction.followup.send(profile)
         
     @personnel.command(
         name="transfer",
