@@ -329,10 +329,12 @@ class Personnel(commands.Cog):
         member: discord.Member,
         branch: str
     ):
+        await interaction.response.defer()
+
         personnel = self.personnel_manager.get_personnel(member.id)
 
         if personnel is None:
-            await interaction.response.send_message(
+            await interaction.followup.send(
                 f"No personnel record was found for {member.mention}."
             )
             return
@@ -355,7 +357,7 @@ class Personnel(commands.Cog):
         target_branch = self.database.cursor.fetchone()
 
         if target_branch is None:
-            await interaction.response.send_message(
+            await interaction.followup.send(
                 f"Branch `{branch.upper()}` does not exist "
                 f"or is inactive."
             )
@@ -369,24 +371,26 @@ class Personnel(commands.Cog):
             )
 
         except ValueError as error:
-            await interaction.response.send_message(
+            await interaction.followup.send(
                 f"Transfer failed: {error}"
             )
             return
 
-        await interaction.response.send_message(
-            f"**Personnel transfer completed.**\n\n"
-            f"Personnel ID: `{personnel_id:06d}`\n"
-            f"Member: {member.mention}\n\n"
-            f"Previous Service ID:\n"
+        await interaction.followup.send(
+            f"**Personnel Transfer Completed.**\n\n"
+            f"**Personnel ID:**\n"
+            f"`{personnel_id:06d}`\n\n"
+            f"**Member:**\n"
+            f"{member.mention}\n\n"
+            f"**Previous Service ID:**\n"
             f"`{result['old_service_id']}`\n\n"
-            f"New Service ID:\n"
+            f"**New Service ID:**\n"
             f"`{result['new_service_id']}`\n\n"
-            f"New Branch:\n"
+            f"**New Branch:**\n"
             f"{result['new_branch_name']}\n\n"
-            f"Transfer Date:\n"
+            f"**Transfer Date:**\n"
             f"{result['date']}\n\n"
-            f"Transferred By:\n"
+            f"**Transferred By:**\n"
             f"{interaction.user.mention}"
         )
 
