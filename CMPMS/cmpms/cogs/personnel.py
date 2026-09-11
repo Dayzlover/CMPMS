@@ -5,6 +5,337 @@ from discord.ext import commands
 from cmpms.managers.personnel_manager import PersonnelManager
 from cmpms.database.database import DatabaseManager
 
+class IdentityEditModal(discord.ui.Modal, title="Edit Identity"):
+
+    def __init__(self, cog, personnel):
+        super().__init__()
+
+        self.cog = cog
+        self.personnel = personnel
+
+        self.full_name = discord.ui.TextInput(
+            label="Full Name",
+            default=personnel["full_name"],
+            required=True,
+            max_length=100
+        )
+
+        self.display_name = discord.ui.TextInput(
+            label="Display Name",
+            default=personnel["display_name"],
+            required=True,
+            max_length=100
+        )
+
+        self.callsign = discord.ui.TextInput(
+            label="Callsign",
+            default=personnel["callsign"] or "",
+            required=False,
+            max_length=50
+        )
+
+        self.add_item(self.full_name)
+        self.add_item(self.display_name)
+        self.add_item(self.callsign)
+
+    async def on_submit(self, interaction: discord.Interaction):
+
+        try:
+            self.cog.personnel_manager.update_personnel(
+                personnel_id=self.personnel["personnel_id"],
+                full_name=self.full_name.value,
+                display_name=self.display_name.value,
+                callsign=self.callsign.value or None,
+                steam_username=self.personnel["steam_username"],
+                steam_uid=self.personnel["steam_uid"],
+                dayz_name=self.personnel["dayz_name"],
+                position=self.personnel["position"],
+                ambassador=self.personnel["ambassador"],
+                status=self.personnel["status"],
+                notes=self.personnel["notes"],
+                performed_by=str(interaction.user)
+            )
+
+            await interaction.response.send_message(
+                "Personnel identity information updated successfully."
+            )
+
+        except Exception as error:
+            await interaction.response.send_message(
+                f"Personnel update failed: {error}"
+            )
+
+class GameEditModal(discord.ui.Modal, title="Edit Game Information"):
+
+    def __init__(self, cog, personnel):
+        super().__init__()
+
+        self.cog = cog
+        self.personnel = personnel
+
+        self.steam_username = discord.ui.TextInput(
+            label="Steam Username",
+            default=personnel["steam_username"] or "",
+            required=True,
+            max_length=100
+        )
+
+        self.steam_uid = discord.ui.TextInput(
+            label="Steam64 ID",
+            default=personnel["steam_uid"],
+            required=True,
+            max_length=30
+        )
+
+        self.dayz_name = discord.ui.TextInput(
+            label="DayZ Username",
+            default=personnel["dayz_name"],
+            required=True,
+            max_length=100
+        )
+
+        self.add_item(self.steam_username)
+        self.add_item(self.steam_uid)
+        self.add_item(self.dayz_name)
+
+    async def on_submit(self, interaction: discord.Interaction):
+
+        try:
+            self.cog.personnel_manager.update_personnel(
+                personnel_id=self.personnel["personnel_id"],
+                full_name=self.personnel["full_name"],
+                display_name=self.personnel["display_name"],
+                callsign=self.personnel["callsign"],
+                steam_username=self.steam_username.value,
+                steam_uid=self.steam_uid.value,
+                dayz_name=self.dayz_name.value,
+                position=self.personnel["position"],
+                ambassador=self.personnel["ambassador"],
+                status=self.personnel["status"],
+                notes=self.personnel["notes"],
+                performed_by=str(interaction.user)
+            )
+
+            await interaction.response.send_message(
+                "Game information updated successfully."
+            )
+
+        except Exception as error:
+            await interaction.response.send_message(
+                f"Personnel update failed: {error}"
+            )
+
+class MilitaryEditModal(discord.ui.Modal, title="Edit Military Information"):
+
+    def __init__(self, cog, personnel):
+        super().__init__()
+
+        self.cog = cog
+        self.personnel = personnel
+
+        self.position = discord.ui.TextInput(
+            label="Position",
+            default=personnel["position"] or "",
+            required=False,
+            max_length=100
+        )
+
+        self.ambassador = discord.ui.TextInput(
+            label="Ambassador (Yes or No)",
+            default="Yes" if personnel["ambassador"] else "No",
+            required=True,
+            max_length=3
+        )
+
+        self.add_item(self.position)
+        self.add_item(self.ambassador)
+
+    async def on_submit(self, interaction: discord.Interaction):
+
+        ambassador_value = self.ambassador.value.strip().lower()
+
+        if ambassador_value not in ("yes", "no"):
+            await interaction.response.send_message(
+                "Ambassador must be either `Yes` or `No`."
+            )
+            return
+
+        try:
+            self.cog.personnel_manager.update_personnel(
+                personnel_id=self.personnel["personnel_id"],
+                full_name=self.personnel["full_name"],
+                display_name=self.personnel["display_name"],
+                callsign=self.personnel["callsign"],
+                steam_username=self.personnel["steam_username"],
+                steam_uid=self.personnel["steam_uid"],
+                dayz_name=self.personnel["dayz_name"],
+                position=self.position.value or None,
+                ambassador=ambassador_value == "yes",
+                status=self.personnel["status"],
+                notes=self.personnel["notes"],
+                performed_by=str(interaction.user)
+            )
+
+            await interaction.response.send_message(
+                "Military information updated successfully."
+            )
+
+        except Exception as error:
+            await interaction.response.send_message(
+                f"Personnel update failed: {error}"
+            )
+
+class StatusEditModal(discord.ui.Modal, title="Edit Status & Notes"):
+
+    def __init__(self, cog, personnel):
+        super().__init__()
+
+        self.cog = cog
+        self.personnel = personnel
+
+        self.status = discord.ui.TextInput(
+            label="Status",
+            default=personnel["status"],
+            required=True,
+            max_length=20
+        )
+
+        self.notes = discord.ui.TextInput(
+            label="Notes",
+            default=personnel["notes"] or "",
+            required=False,
+            style=discord.TextStyle.paragraph,
+            max_length=1000
+        )
+
+        self.add_item(self.status)
+        self.add_item(self.notes)
+
+    async def on_submit(self, interaction: discord.Interaction):
+
+        status = self.status.value.strip()
+
+        valid_statuses = (
+            "Active",
+            "Inactive",
+            "AWOL",
+            "Discharged",
+            "Deceased"
+        )
+
+        if status not in valid_statuses:
+            await interaction.response.send_message(
+                "Invalid status. Use one of:\n"
+                "`Active`, `Inactive`, `AWOL`, "
+                "`Discharged`, `Deceased`"
+            )
+            return
+
+        try:
+            self.cog.personnel_manager.update_personnel(
+                personnel_id=self.personnel["personnel_id"],
+                full_name=self.personnel["full_name"],
+                display_name=self.personnel["display_name"],
+                callsign=self.personnel["callsign"],
+                steam_username=self.personnel["steam_username"],
+                steam_uid=self.personnel["steam_uid"],
+                dayz_name=self.personnel["dayz_name"],
+                position=self.personnel["position"],
+                ambassador=self.personnel["ambassador"],
+                status=status,
+                notes=self.notes.value or None,
+                performed_by=str(interaction.user)
+            )
+
+            await interaction.response.send_message(
+                "Status and notes updated successfully."
+            )
+
+        except Exception as error:
+            await interaction.response.send_message(
+                f"Personnel update failed: {error}"
+            )
+
+class PersonnelEditSelect(discord.ui.Select):
+
+    def __init__(self, cog, personnel):
+
+        self.cog = cog
+        self.personnel = personnel
+
+        options = [
+            discord.SelectOption(
+                label="Identity",
+                description="Edit name, display name, and callsign.",
+                emoji="👤"
+            ),
+            discord.SelectOption(
+                label="Game Information",
+                description="Edit Steam and DayZ information.",
+                emoji="🎮"
+            ),
+            discord.SelectOption(
+                label="Military",
+                description="Edit position and ambassador status.",
+                emoji=":CDFflag:"
+            ),
+            discord.SelectOption(
+                label="Status & Notes",
+                description="Edit status and personnel notes.",
+                emoji="📋"
+            )
+        ]
+
+        super().__init__(
+            placeholder="Select what you want to edit...",
+            options=options
+        )
+
+    async def callback(self, interaction: discord.Interaction):
+
+        if self.values[0] == "Identity":
+            await interaction.response.send_modal(
+                IdentityEditModal(
+                    self.cog,
+                    self.personnel
+                )
+            )
+
+        elif self.values[0] == "Game Information":
+            await interaction.response.send_modal(
+                GameEditModal(
+                    self.cog,
+                    self.personnel
+                )
+            )
+
+        elif self.values[0] == "Military":
+            await interaction.response.send_modal(
+                MilitaryEditModal(
+                    self.cog,
+                    self.personnel
+                )
+            )
+
+        elif self.values[0] == "Status & Notes":
+            await interaction.response.send_modal(
+                StatusEditModal(
+                    self.cog,
+                    self.personnel
+                )
+            )
+
+class PersonnelEditView(discord.ui.View):
+
+    def __init__(self, cog, personnel):
+        super().__init__(timeout=120)
+
+        self.add_item(
+            PersonnelEditSelect(
+                cog,
+                personnel
+            )
+        )
 
 class Personnel(commands.Cog):
 
@@ -392,6 +723,57 @@ class Personnel(commands.Cog):
             f"{result['date']}\n\n"
             f"**Transferred By:**\n"
             f"{interaction.user.mention}"
+        )
+
+    @personnel.command(
+        name="edit",
+        description="Edit a personnel record."
+    )
+    @app_commands.describe(
+        member="The personnel member to edit."
+    )
+    async def edit(
+        self,
+        interaction: discord.Interaction,
+        member: discord.Member
+    ):
+
+        await interaction.response.defer()
+
+        personnel = self.personnel_manager.get_personnel(
+            member.id
+        )
+
+        if personnel is None:
+            await interaction.followup.send(
+                f"No personnel record was found for "
+                f"{member.mention}."
+            )
+            return
+
+        personnel_data = {
+            "personnel_id": personnel[0],
+            "full_name": personnel[3],
+            "display_name": personnel[4],
+            "callsign": personnel[5],
+            "steam_username": personnel[6],
+            "steam_uid": personnel[7],
+            "dayz_name": personnel[8],
+            "position": personnel[12],
+            "ambassador": personnel[13],
+            "status": personnel[14],
+            "notes": personnel[23]
+        }
+
+        await interaction.followup.send(
+            f"**Edit Personnel Record**\n\n"
+            f"Personnel ID: `{personnel[0]:06d}`\n"
+            f"Member: {member.mention}\n\n"
+            f"Select a category below to edit.",
+            view=PersonnelEditView(
+                self,
+                personnel_data
+            )
         )
 
 async def setup(bot):

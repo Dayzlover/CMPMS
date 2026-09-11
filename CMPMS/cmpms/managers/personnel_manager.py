@@ -264,6 +264,102 @@ class PersonnelManager:
 
         return self.database.cursor.fetchone()
 
+    def update_personnel(
+        self,
+        personnel_id,
+        full_name,
+        display_name,
+        callsign,
+        steam_username,
+        steam_uid,
+        dayz_name,
+        position,
+        ambassador,
+        status,
+        notes,
+        performed_by
+    ):
+
+        self.database.cursor.execute(
+            """
+            SELECT personnel_id
+            FROM personnel
+            WHERE personnel_id = ?
+            """,
+            (personnel_id,)
+        )
+
+        personnel = self.database.cursor.fetchone()
+
+        if personnel is None:
+            raise ValueError("Personnel record not found.")
+
+        if status not in (
+            "Active",
+            "Inactive",
+            "AWOL",
+            "Discharged",
+            "Deceased"
+        ):
+            raise ValueError(
+                "Invalid personnel status."
+            )
+
+        self.database.cursor.execute(
+            """
+            UPDATE personnel
+            SET
+                full_name = ?,
+                display_name = ?,
+                callsign = ?,
+                steam_username = ?,
+                steam_uid = ?,
+                dayz_name = ?,
+                position = ?,
+                ambassador = ?,
+                status = ?,
+                notes = ?
+            WHERE personnel_id = ?
+            """,
+            (
+                full_name,
+                display_name,
+                callsign,
+                steam_username,
+                steam_uid,
+                dayz_name,
+                position,
+                1 if ambassador else 0,
+                status,
+                notes,
+                personnel_id
+            )
+        )
+
+        today = datetime.now().strftime("%d/%m/%Y")
+
+        self.database.cursor.execute(
+            """
+            INSERT INTO audit_log (
+                personnel_id,
+                action,
+                performed_by,
+                action_date,
+                details
+            )
+            VALUES (?, ?, ?, ?, ?)
+            """,
+            (
+                personnel_id,
+                "Personnel Record Updated",
+                performed_by,
+                today,
+                "Personnel record edited."
+            )
+        )
+
+        self.database.connection.commit()
+
     def get_service_history(self, personnel_id):
 
         self.database.cursor.execute(
