@@ -32,9 +32,15 @@ class CMPMSBot(commands.Bot):
         self.logger.info("[SYSTEM] Slash commands synchronized.")
 
         for command in synced_commands:
-            self.logger.info(
+             self.logger.info(
                 f"[COMMAND] /{command.name}"
     )
+
+        if hasattr(command, "commands"):
+            for subcommand in command.commands:
+                self.logger.info(
+                    f"[COMMAND] /{command.name} {subcommand.name}"
+            )
 
     async def on_ready(self):
         self.logger.info("=" * 50)
