@@ -408,7 +408,7 @@ class PersonnelManager:
                 "Branch Transfer",
                 performed_by,
                 today,
-                f"Transferred from {old_service_id} to ",
+                f"Transferred from {old_service_id} to "
                 f"{new_service_id} ({new_branch_name})"
             )
         )
