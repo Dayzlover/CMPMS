@@ -27,8 +27,14 @@ class CMPMSBot(commands.Bot):
                 self.logger.info(f"[COG] Loaded: {file[:-3]}")
 
         # Sync slash commands
-        await self.tree.sync()
+        synced_commands = await self.tree.sync()
+
         self.logger.info("[SYSTEM] Slash commands synchronized.")
+
+        for command in synced_commands:
+            self.logger.info(
+                f"[COMMAND] /{command.name}"
+    )
 
     async def on_ready(self):
         self.logger.info("=" * 50)
