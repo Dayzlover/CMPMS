@@ -277,7 +277,7 @@ class PersonnelEditSelect(discord.ui.Select):
             discord.SelectOption(
                 label="Military",
                 description="Edit position and ambassador status.",
-                emoji=":CDFflag:"
+                emoji="🎖️"
             ),
             discord.SelectOption(
                 label="Status & Notes",
