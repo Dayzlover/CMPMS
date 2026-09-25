@@ -759,10 +759,10 @@ class Personnel(commands.Cog):
             "steam_username": personnel[6],
             "steam_uid": personnel[7],
             "dayz_name": personnel[8],
-            "position": personnel[12],
-            "ambassador": personnel[13],
-            "status": personnel[14],
-            "notes": personnel[23]
+            "position": personnel[11],
+            "ambassador": personnel[12],
+            "status": personnel[13],
+            "notes": personnel[22]
         }
 
         await interaction.followup.send(
