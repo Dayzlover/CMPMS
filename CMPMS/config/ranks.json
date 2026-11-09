@@ -5,6 +5,223 @@
         "category": "Training",
         "pay": 0,
         "promotion_limit": "OR-1",
-        "approval_required": 0
+        "approval_required": 0,
+        "rank_order": 0
+    },
+    {
+        "code": "OR-1",
+        "name": "Private",
+        "category": "Enlisted",
+        "pay": 0,
+        "promotion_limit": null,
+        "approval_required": 0,
+        "rank_order": 10
+    },
+    {
+        "code": "OR-2",
+        "name": "Private First Class",
+        "category": "Enlisted",
+        "pay": 0,
+        "promotion_limit": null,
+        "approval_required": 0,
+        "rank_order": 20
+    },
+    {
+        "code": "OR-3",
+        "name": "Corporal",
+        "category": "NCO",
+        "pay": 0,
+        "promotion_limit": null,
+        "approval_required": 0,
+        "rank_order": 30
+    },
+    {
+        "code": "OR-4",
+        "name": "Sergeant",
+        "category": "NCO",
+        "pay": 0,
+        "promotion_limit": null,
+        "approval_required": 0,
+        "rank_order": 40
+    },
+    {
+        "code": "OR-5",
+        "name": "Staff Sergeant",
+        "category": "NCO",
+        "pay": 0,
+        "promotion_limit": null,
+        "approval_required": 0,
+        "rank_order": 50
+    },
+    {
+        "code": "OR-6",
+        "name": "Sergeant First Class",
+        "category": "NCO",
+        "pay": 0,
+        "promotion_limit": null,
+        "approval_required": 0,
+        "rank_order": 60
+    },
+    {
+        "code": "OR-7",
+        "name": "Master Sergeant",
+        "category": "NCO",
+        "pay": 0,
+        "promotion_limit": null,
+        "approval_required": 0,
+        "rank_order": 70
+    },
+    {
+        "code": "OR-8",
+        "name": "Warrant Officer",
+        "category": "Officer",
+        "pay": 0,
+        "promotion_limit": null,
+        "approval_required": 0,
+        "rank_order": 80
+    },
+    {
+        "code": "OR-9",
+        "name": "Senior Warrant Officer",
+        "category": "Officer",
+        "pay": 0,
+        "promotion_limit": null,
+        "approval_required": 0,
+        "rank_order": 90
+    },
+    {
+        "code": "OR-10",
+        "name": "Chief Warrant Officer",
+        "category": "Officer",
+        "pay": 0,
+        "promotion_limit": null,
+        "approval_required": 0,
+        "rank_order": 100
+    },
+    {
+        "code": "OF-1",
+        "name": "Second Lieutenant",
+        "category": "Officer",
+        "pay": 0,
+        "promotion_limit": null,
+        "approval_required": 0,
+        "rank_order": 110
+    },
+    {
+        "code": "OF-2",
+        "name": "First Lieutenant",
+        "category": "Officer",
+        "pay": 0,
+        "promotion_limit": null,
+        "approval_required": 0,
+        "rank_order": 120
+    },
+    {
+        "code": "OF-3",
+        "name": "Captain",
+        "category": "Officer",
+        "pay": 0,
+        "promotion_limit": null,
+        "approval_required": 0,
+        "rank_order": 130
+    },
+    {
+        "code": "OF-4",
+        "name": "Major",
+        "category": "Officer",
+        "pay": 0,
+        "promotion_limit": null,
+        "approval_required": 0,
+        "rank_order": 140
+    },
+    {
+        "code": "OF-5",
+        "name": "Lieutenant Colonel",
+        "category": "Officer",
+        "pay": 0,
+        "promotion_limit": null,
+        "approval_required": 0,
+        "rank_order": 150
+    },
+    {
+        "code": "OF-6",
+        "name": "Colonel",
+        "category": "High-Com",
+        "pay": 0,
+        "promotion_limit": null,
+        "approval_required": 0,
+        "rank_order": 160
+    },
+    {
+        "code": "OF-7",
+        "name": "Brigadier General",
+        "category": "High-Com",
+        "pay": 0,
+        "promotion_limit": null,
+        "approval_required": 0,
+        "rank_order": 170
+    },
+    {
+        "code": "OF-8",
+        "name": "Major General",
+        "category": "High-Com",
+        "pay": 0,
+        "promotion_limit": null,
+        "approval_required": 0,
+        "rank_order": 180
+    },
+    {
+        "code": "OF-9",
+        "name": "Lieutenant General",
+        "category": "High-Com",
+        "pay": 0,
+        "promotion_limit": null,
+        "approval_required": 0,
+        "rank_order": 190
+    },
+    {
+        "code": "OF-10",
+        "name": "General",
+        "category": "High-Com",
+        "pay": 0,
+        "promotion_limit": null,
+        "approval_required": 0,
+        "rank_order": 200
+    },
+    {
+        "code": "JCS-CGDF",
+        "name": "General Of The CGDF",
+        "category": "Joint Chiefs of Staff",
+        "pay": 0,
+        "promotion_limit": null,
+        "approval_required": 0,
+        "rank_order": 300
+    },
+    {
+        "code": "JCS-CADF",
+        "name": "General Of The CADF",
+        "category": "Joint Chiefs of Staff",
+        "pay": 0,
+        "promotion_limit": null,
+        "approval_required": 0,
+        "rank_order": 310
+    },
+    {
+        "code": "JCS-FLEET",
+        "name": "Fleet Admiral",
+        "category": "Joint Chiefs of Staff",
+        "pay": 0,
+        "promotion_limit": null,
+        "approval_required": 0,
+        "rank_order": 320
+    },
+    {
+        "code": "COMMANDER",
+        "name": "Commander of the Chernarus Defense Forces",
+        "category": "Commander",
+        "pay": 0,
+        "promotion_limit": null,
+        "approval_required": 0,
+        "rank_order": 400
     }
 ]

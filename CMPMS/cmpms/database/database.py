@@ -96,8 +96,8 @@ class DatabaseManager:
         """
     )
 
-    def create_ranks_table(self):
-        self.cursor.execute(
+def create_ranks_table(self):
+    self.cursor.execute(
         """
             CREATE TABLE IF NOT EXISTS ranks (
             rank_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -112,10 +112,23 @@ class DatabaseManager:
 
             promotion_limit TEXT,
 
-            approval_required INTEGER DEFAULT 0
+            approval_required INTEGER DEFAULT 0,
+
+            rank_order INTEGER NOT NULL DEFAULT 0
             )
         """
     )
+
+    self.cursor.execute(
+        "PRAGMA table_info(ranks)"
+    )
+
+    columns = [row[1] for row in self.cursor.fetchall()]
+
+    if "rank_order" not in columns:
+        self.cursor.execute(
+            "ALTER TABLE ranks ADD COLUMN rank_order INTEGER NOT NULL DEFAULT 0"
+        )
 
     def create_certifications_table(self):
         self.cursor.execute(

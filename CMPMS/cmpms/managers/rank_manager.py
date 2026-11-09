@@ -22,7 +22,9 @@ class RankManager:
                 (rank["code"],)
             )
 
-            if self.database.cursor.fetchone() is None:
+            existing_rank = self.database.cursor.fetchone()
+
+            if existing_rank is None:
 
                 self.database.cursor.execute(
                     """
@@ -32,9 +34,10 @@ class RankManager:
                         category,
                         pay,
                         promotion_limit,
-                        approval_required
+                        approval_required,
+                        rank_order
                     )
-                    VALUES (?, ?, ?, ?, ?, ?)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
                     """,
                     (
                         rank["code"],
@@ -42,7 +45,33 @@ class RankManager:
                         rank["category"],
                         rank["pay"],
                         rank["promotion_limit"],
-                        rank["approval_required"]
+                        rank["approval_required"],
+                        rank["rank_order"]
+                    )
+                )
+
+            else:
+
+                self.database.cursor.execute(
+                    """
+                    UPDATE ranks
+                    SET
+                        name = ?,
+                        category = ?,
+                        pay = ?,
+                        promotion_limit = ?,
+                        approval_required = ?,
+                        rank_order = ?
+                    WHERE code = ?
+                    """,
+                    (
+                        rank["name"],
+                        rank["category"],
+                        rank["pay"],
+                        rank["promotion_limit"],
+                        rank["approval_required"],
+                        rank["rank_order"],
+                        rank["code"]
                     )
                 )
 
