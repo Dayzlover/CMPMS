@@ -96,8 +96,8 @@ class DatabaseManager:
         """
     )
 
-def create_ranks_table(self):
-    self.cursor.execute(
+    def create_ranks_table(self):
+        self.cursor.execute(
         """
             CREATE TABLE IF NOT EXISTS ranks (
             rank_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -119,18 +119,18 @@ def create_ranks_table(self):
         """
     )
 
-    self.cursor.execute(
+        self.cursor.execute(
         "PRAGMA table_info(ranks)"
     )
 
-    columns = [row[1] for row in self.cursor.fetchall()]
+        columns = [row[1] for row in self.cursor.fetchall()]
 
-    if "rank_order" not in columns:
-        self.cursor.execute(
+        if "rank_order" not in columns:
+            self.cursor.execute(
             "ALTER TABLE ranks ADD COLUMN rank_order INTEGER NOT NULL DEFAULT 0"
         )
 
-def create_certifications_table(self):
+    def create_certifications_table(self):
         self.cursor.execute(
             """
         CREATE TABLE IF NOT EXISTS certifications (
@@ -140,8 +140,8 @@ def create_certifications_table(self):
         )
         """)
 
-def create_member_certifications_table(self):
-    self.cursor.execute(
+    def create_member_certifications_table(self):
+        self.cursor.execute(
             """
             CREATE TABLE IF NOT EXISTS member_certifications (
                 personnel_id INTEGER NOT NULL,
@@ -163,8 +163,8 @@ def create_member_certifications_table(self):
             """
         )
 
-def create_service_history_table(self):
-    self.cursor.execute(
+    def create_service_history_table(self):
+        self.cursor.execute(
             """
             CREATE TABLE IF NOT EXISTS service_history (
                 history_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -184,8 +184,8 @@ def create_service_history_table(self):
             """
         )
 
-def create_promotion_history_table(self):
-    self.cursor.execute("""
+    def create_promotion_history_table(self):
+        self.cursor.execute("""
             CREATE TABLE IF NOT EXISTS promotion_history (
                 promotion_id INTEGER PRIMARY KEY AUTOINCREMENT,
 
@@ -203,8 +203,8 @@ def create_promotion_history_table(self):
             )
         """)
 
-def create_name_history_table(self):
-    self.cursor.execute("""
+    def create_name_history_table(self):
+        self.cursor.execute("""
             CREATE TABLE IF NOT EXISTS name_history (
                 name_history_id INTEGER PRIMARY KEY AUTOINCREMENT,
 
@@ -222,8 +222,8 @@ def create_name_history_table(self):
             )
         """)
 
-def create_audit_log_table(self):
-    self.cursor.execute("""
+    def create_audit_log_table(self):
+        self.cursor.execute("""
         CREATE TABLE IF NOT EXISTS audit_log (
             audit_id INTEGER PRIMARY KEY AUTOINCREMENT,
 
@@ -242,5 +242,5 @@ def create_audit_log_table(self):
         )
         """)
 
-def close(self):
-    self.connection.close()
+    def close(self):
+        self.connection.close()
