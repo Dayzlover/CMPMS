@@ -130,7 +130,7 @@ def create_ranks_table(self):
             "ALTER TABLE ranks ADD COLUMN rank_order INTEGER NOT NULL DEFAULT 0"
         )
 
-    def create_certifications_table(self):
+def create_certifications_table(self):
         self.cursor.execute(
             """
         CREATE TABLE IF NOT EXISTS certifications (
@@ -140,30 +140,31 @@ def create_ranks_table(self):
         )
         """)
 
-    def create_member_certifications_table(self):
-        self.cursor.execute(
+def create_member_certifications_table(self):
+    self.cursor.execute(
             """
-        CREATE TABLE IF NOT EXISTS member_certifications (
-            personnel_id INTEGER NOT NULL,
+            CREATE TABLE IF NOT EXISTS member_certifications (
+                personnel_id INTEGER NOT NULL,
 
-            certification_id INTEGER NOT NULL,
+                certification_id INTEGER NOT NULL,
 
-            awarded_by TEXT,
+                awarded_by TEXT,
 
-            awarded_date TEXT,
+                awarded_date TEXT,
 
-            PRIMARY KEY(personnel_id, certification_id),
+                PRIMARY KEY(personnel_id, certification_id),
 
-            FOREIGN KEY(personnel_id)
-                REFERENCES personnel(personnel_id),
+                FOREIGN KEY(personnel_id)
+                    REFERENCES personnel(personnel_id),
 
-            FOREIGN KEY(certification_id)
-                REFERENCES certifications(certification_id)
+                FOREIGN KEY(certification_id)
+                    REFERENCES certifications(certification_id)
+            )
+            """
         )
-        """)
 
-    def create_service_history_table(self):
-        self.cursor.execute(
+def create_service_history_table(self):
+    self.cursor.execute(
             """
             CREATE TABLE IF NOT EXISTS service_history (
                 history_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -183,8 +184,8 @@ def create_ranks_table(self):
             """
         )
 
-    def create_promotion_history_table(self):
-        self.cursor.execute("""
+def create_promotion_history_table(self):
+    self.cursor.execute("""
             CREATE TABLE IF NOT EXISTS promotion_history (
                 promotion_id INTEGER PRIMARY KEY AUTOINCREMENT,
 
@@ -202,8 +203,8 @@ def create_ranks_table(self):
             )
         """)
 
-    def create_name_history_table(self):
-        self.cursor.execute("""
+def create_name_history_table(self):
+    self.cursor.execute("""
             CREATE TABLE IF NOT EXISTS name_history (
                 name_history_id INTEGER PRIMARY KEY AUTOINCREMENT,
 
@@ -221,8 +222,8 @@ def create_ranks_table(self):
             )
         """)
 
-    def create_audit_log_table(self):
-        self.cursor.execute("""
+def create_audit_log_table(self):
+    self.cursor.execute("""
         CREATE TABLE IF NOT EXISTS audit_log (
             audit_id INTEGER PRIMARY KEY AUTOINCREMENT,
 
@@ -241,5 +242,5 @@ def create_ranks_table(self):
         )
         """)
 
-    def close(self):
-        self.connection.close()
+def close(self):
+    self.connection.close()
