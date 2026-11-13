@@ -5,6 +5,45 @@ from discord.ext import commands
 from cmpms.managers.personnel_manager import PersonnelManager
 from cmpms.database.database import DatabaseManager
 
+RANK_CHOICES = [
+    app_commands.Choice(name="Training", value="Training"),
+    app_commands.Choice(name="OR-1", value="OR-1"),
+    app_commands.Choice(name="OR-2", value="OR-2"),
+    app_commands.Choice(name="OR-3", value="OR-3"),
+    app_commands.Choice(name="OR-4", value="OR-4"),
+    app_commands.Choice(name="OR-5", value="OR-5"),
+    app_commands.Choice(name="OR-6", value="OR-6"),
+    app_commands.Choice(name="OR-7", value="OR-7"),
+    app_commands.Choice(name="OR-8", value="OR-8"),
+    app_commands.Choice(name="OR-9", value="OR-9"),
+    app_commands.Choice(name="OR-10", value="OR-10"),
+    app_commands.Choice(name="OF-1", value="OF-1"),
+    app_commands.Choice(name="OF-2", value="OF-2"),
+    app_commands.Choice(name="OF-3", value="OF-3"),
+    app_commands.Choice(name="OF-4", value="OF-4"),
+    app_commands.Choice(name="OF-5", value="OF-5"),
+    app_commands.Choice(name="OF-6", value="OF-6"),
+    app_commands.Choice(name="OF-7", value="OF-7"),
+    app_commands.Choice(name="OF-8", value="OF-8"),
+    app_commands.Choice(name="OF-9", value="OF-9"),
+    app_commands.Choice(name="OF-10", value="OF-10"),
+]
+
+JCS_RANK_CHOICES = [
+    app_commands.Choice(
+        name="General of the CGDF",
+        value="JCS-CGDF"
+    ),
+    app_commands.Choice(
+        name="General of the CADF",
+        value="JCS-CADF"
+    ),
+    app_commands.Choice(
+        name="Fleet Admiral",
+        value="JCS-FLEET"
+    ),
+]
+
 class IdentityEditModal(discord.ui.Modal, title="Edit Identity"):
 
     def __init__(self, cog, personnel):
@@ -775,6 +814,198 @@ class Personnel(commands.Cog):
                 personnel_data
             )
         )
+
+    def _is_commander(self, discord_id):
+        personnel = self.personnel_manager.get_personnel(discord_id)
+
+        if personnel is None:
+            return False
+
+        return personnel[26] == "COMMANDER"
+
+    @personnel.command(
+        name="promote",
+        description="Promote a personnel member."
+    )
+    @app_commands.describe(
+        member="The personnel member to promote.",
+        rank="The rank they are being promoted to."
+    )
+    @app_commands.choices(rank=RANK_CHOICES)
+    async def promote(
+        self,
+        interaction: discord.Interaction,
+        member: discord.Member,
+        rank: app_commands.Choice[str]
+    ):
+        if not self._is_commander(interaction.user.id):
+            await interaction.response.send_message(
+                "Only the current Commander of the Chernarus Defense "
+                "Forces may promote personnel.",
+                ephemeral=True
+            )
+            return
+
+        target = self.personnel_manager.get_personnel(member.id)
+
+        if target is None:
+            await interaction.response.send_message(
+                f"No personnel record was found for {member.mention}.",
+                ephemeral=True
+            )
+            return
+
+        try:
+            self.personnel_manager.change_rank(
+                personnel_id=target[0],
+                new_rank_code=rank.value,
+                performed_by=str(interaction.user),
+                change_type="Promotion"
+            )
+
+            await interaction.response.send_message(
+                f"{member.mention} has been promoted to `{rank.value}` "
+                f"by {interaction.user.mention}."
+            )
+
+        except ValueError as error:
+            await interaction.response.send_message(
+                f"Promotion failed: {error}",
+                ephemeral=True
+            )
+
+    @personnel.command(
+        name="demote",
+        description="Demote a personnel member."
+    )
+    @app_commands.describe(
+        member="The personnel member to demote.",
+        rank="The rank they are being demoted to."
+    )
+    @app_commands.choices(rank=RANK_CHOICES)
+    async def demote(
+        self,
+        interaction: discord.Interaction,
+        member: discord.Member,
+        rank: app_commands.Choice[str]
+    ):
+        if not self._is_commander(interaction.user.id):
+            await interaction.response.send_message(
+                "Only the current Commander of the Chernarus Defense "
+                "Forces may demote personnel.",
+                ephemeral=True
+            )
+            return
+
+        target = self.personnel_manager.get_personnel(member.id)
+
+        if target is None:
+            await interaction.response.send_message(
+                f"No personnel record was found for {member.mention}.",
+                ephemeral=True
+            )
+            return
+
+        try:
+            self.personnel_manager.change_rank(
+                personnel_id=target[0],
+                new_rank_code=rank.value,
+                performed_by=str(interaction.user),
+                change_type="Demotion"
+            )
+
+            await interaction.response.send_message(
+                f"{member.mention} has been demoted to `{rank.value}` "
+                f"by {interaction.user.mention}."
+            )
+
+        except ValueError as error:
+            await interaction.response.send_message(
+                f"Demotion failed: {error}",
+                ephemeral=True
+            )
+
+    @personnel.command(
+        name="appoint",
+        description="Appoint a member to a Joint Chiefs of Staff rank."
+    )
+    @app_commands.describe(
+        member="The personnel member being appointed.",
+        rank="The JCS appointment being granted."
+    )
+    @app_commands.choices(rank=JCS_RANK_CHOICES)
+    async def appoint(
+        self,
+        interaction: discord.Interaction,
+        member: discord.Member,
+        rank: app_commands.Choice[str]
+    ):
+        if not self._is_commander(interaction.user.id):
+            await interaction.response.send_message(
+                "Only the current Commander of the Chernarus Defense "
+                "Forces may make JCS appointments.",
+                ephemeral=True
+            )
+            return
+
+        target = self.personnel_manager.get_personnel(member.id)
+
+        if target is None:
+            await interaction.response.send_message(
+                f"No personnel record was found for {member.mention}.",
+                ephemeral=True
+            )
+            return
+
+        try:
+            self.personnel_manager.appoint_rank(
+                personnel_id=target[0],
+                new_rank_code=rank.value,
+                performed_by=str(interaction.user)
+            )
+
+            await interaction.response.send_message(
+                f"{member.mention} has been appointed to "
+                f"**{rank.name}** by {interaction.user.mention}."
+            )
+
+        except ValueError as error:
+            await interaction.response.send_message(
+                f"Appointment failed: {error}",
+                ephemeral=True
+            )
+
+    @personnel.command(
+        name="bootstrap-commander",
+        description="Assign the initial Commander of the CDF."
+    )
+    async def bootstrap_commander(
+        self,
+        interaction: discord.Interaction
+    ):
+        if not await self.bot.is_owner(interaction.user):
+            await interaction.response.send_message(
+                "Only the Discord bot owner may use this command.",
+                ephemeral=True
+            )
+            return
+
+        try:
+            self.personnel_manager.bootstrap_commander(
+                discord_id=interaction.user.id,
+                performed_by=str(interaction.user)
+            )
+
+            await interaction.response.send_message(
+                "The initial Commander of the Chernarus Defense Forces "
+                "has been assigned to your personnel record."
+            )
+
+        except ValueError as error:
+            await interaction.response.send_message(
+                f"Commander assignment failed: {error}",
+                ephemeral=True
+            )
 
 async def setup(bot):
     await bot.add_cog(Personnel(bot))
