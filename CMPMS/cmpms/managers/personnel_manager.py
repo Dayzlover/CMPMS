@@ -360,6 +360,188 @@ class PersonnelManager:
 
         self.database.connection.commit()
 
+
+    def change_rank(
+        self,
+        personnel_id,
+        new_rank_code,
+        performed_by,
+        approved=False
+    ):
+        """
+        Change a personnel member's rank.
+
+        Approval-required ranks cannot be assigned unless approved=True.
+        """
+
+        today = datetime.now().strftime("%d/%m/%Y")
+
+        try:
+            # Retrieve the personnel member's current rank.
+            self.database.cursor.execute(
+                """
+                    SELECT
+                        p.personnel_id,
+                        r.code AS old_rank_code,
+                        r.name AS old_rank_name,
+                        r.rank_order AS old_rank_order,
+                        r.promotion_limit AS old_promotion_limit
+                FROM personnel p
+                JOIN ranks r
+                    ON p.rank_id = r.rank_id
+                WHERE p.personnel_id = ?
+                """,
+                (personnel_id,)
+            )
+
+            personnel = self.database.cursor.fetchone()
+
+            if personnel is None:
+                raise ValueError("Personnel record not found.")
+
+            # Retrieve the requested rank.
+            self.database.cursor.execute(
+                """
+                SELECT
+                    rank_id,
+                    code,
+                    name,
+                    rank_order,
+                    approval_required
+                FROM ranks
+                WHERE UPPER(code) = UPPER(?)
+                """,
+                (new_rank_code.strip(),)
+            )
+
+            target_rank = self.database.cursor.fetchone()
+
+            if target_rank is None:
+                raise ValueError("The requested rank does not exist.")
+
+            old_rank_code = personnel["old_rank_code"]
+            old_rank_name = personnel["old_rank_name"]
+            old_rank_order = personnel["old_rank_order"]
+            old_promotion_limit = personnel["old_promotion_limit"]
+
+
+            new_rank_id = target_rank["rank_id"]
+            new_rank_code = target_rank["code"]
+            new_rank_name = target_rank["name"]
+            new_rank_order = target_rank["rank_order"]
+            approval_required = bool(target_rank["approval_required"])
+
+            if old_rank_code == new_rank_code:
+                raise ValueError(
+                    "Personnel already holds this rank."
+                )
+
+            # Determine whether this is a promotion or demotion.
+            if new_rank_order > old_rank_order:
+                change_type = "Promotion"
+
+            elif new_rank_order < old_rank_order:
+                change_type = "Demotion"
+
+            else:
+                raise ValueError(
+                    "The requested rank has the same rank order "
+                    "as the current rank."
+                )
+
+            # Enforce the current rank's promotion limit.
+            if (
+                change_type == "Promotion"
+                and old_promotion_limit
+                and new_rank_code != old_promotion_limit
+                ):
+                raise ValueError(
+                    f"Personnel holding {old_rank_name} can only be "
+                    f"promoted to {old_promotion_limit}."
+                )
+
+            # Enforce the target rank's approval requirement.
+            if approval_required and not approved:
+                raise ValueError(
+                    f"{new_rank_name} requires approval before "
+                    "it can be assigned."
+                )
+
+            # Update the personnel record.
+            self.database.cursor.execute(
+                """
+                UPDATE personnel
+                SET rank_id = ?
+                WHERE personnel_id = ?
+                """,
+                (
+                    new_rank_id,
+                    personnel_id
+                )
+            )
+
+            # Record the rank change.
+            self.database.cursor.execute(
+                """
+                INSERT INTO promotion_history (
+                    personnel_id,
+                    old_rank,
+                    new_rank,
+                    promoted_by,
+                    promotion_date
+                )
+                VALUES (?, ?, ?, ?, ?)
+                """,
+                (
+                    personnel_id,
+                    old_rank_code,
+                    new_rank_code,
+                    performed_by,
+                    today
+                )
+            )
+
+            # Record the action in the audit log.
+            self.database.cursor.execute(
+                """
+                INSERT INTO audit_log (
+                    personnel_id,
+                    action,
+                    performed_by,
+                    action_date,
+                    details
+                )
+                VALUES (?, ?, ?, ?, ?)
+                """,
+                (
+                    personnel_id,
+                    change_type,
+                    performed_by,
+                    today,
+                    (
+                        f"{old_rank_code} ({old_rank_name}) "
+                        f"-> {new_rank_code} ({new_rank_name})"
+                    )
+                )
+            )
+
+            self.database.connection.commit()
+
+            return {
+                "personnel_id": personnel_id,
+                "old_rank_code": old_rank_code,
+                "old_rank_name": old_rank_name,
+                "new_rank_code": new_rank_code,
+                "new_rank_name": new_rank_name,
+                "change_type": change_type,
+                "approval_required": approval_required,
+                "date": today
+            }
+
+        except Exception:
+            self.database.connection.rollback()
+            raise
+
     def get_service_history(self, personnel_id):
 
         self.database.cursor.execute(
